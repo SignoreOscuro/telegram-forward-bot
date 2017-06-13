@@ -11,11 +11,11 @@ We will assume you and your friends have Telegram accounts and several telegram 
 
 First, you need to create a Telegram bot. Talk with the [BotFather](https://t.me/botfather) and ask it for a bot (and its respective token)
 
-Then, you need to create a file called _token.txt_. You paste the token given to you by BotFather. 
+Then, you need to rename the file config-sample.json to config.json. Add in `token` property your bot's token.
 
-It's also very useful to create a _password.txt_ file, with a password for registering and using the bot (Remember: the bots you create on telegram are public. Then, you need a registration system for using the bot if you don't want some stranger people starts to forwarding messages to your chats and channels). If you don't have a _password.txt_ file, the default password should be _changeme_ (You are double-advised: change the password!)
+Also, its very encouraged to set a password for registering to use the bot. If you don't set a password. Any person could use it and forward messages between your channels.
 
-Install in your server the requirements of the bot using `pip3 install -r requirements.txt`. 
+The next part is to install in your server the requirements of the bot using `pip3 install -r requirements.txt`.
 
 finally, configure the bot, adding it on all the groups you want to connect
 
@@ -33,7 +33,7 @@ Some details about the implementation:
 
 1. you cant forward a message to the same chat you wrote it. The boot will warn you and reject to do that if you try to do it.
 1. Each chat can have more than 1 tag. That's very useful if you have various names for your chats, but if you write several times the same tag, or tags that point to the same group, you will have several forwardings to that chat. I plan to correct this some day. (It's not hard but I'm very busy right now).
-1. Any person registered as authorized with the bot can add tags for the chat or another chats. The use of this bot assumes you have users in your chats that you trust. Also, any person registered to the bot can forward messages to any group using the tags.
+1. Any person registered as authorized with the bot can add tags for the chat or another chats. The use of this bot assumes you have authorized users in your chats that you trust. Also, any person registered to the bot can forward messages to any group using the tags.
 
 
 
