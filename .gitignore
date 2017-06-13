@@ -99,3 +99,8 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# token, allowed y groups are ignored
+token.txt
+allowed.json
+data.json
