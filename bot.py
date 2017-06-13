@@ -134,7 +134,7 @@ def handle(msg):
 bot = telepot.Bot(TOKEN)
 
 MessageLoop(bot, handle).run_as_thread()
-print ('Listening ...')
+print('Listening ...')
 # Keep the program running.
 while 1:
     time.sleep(10)
