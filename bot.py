@@ -27,16 +27,16 @@ PASSWORD = "changeme"
 with open('chats.json', 'r') as f:
     chats = json.load(f)
 
-with open('allowed', 'r') as f:
+with open('allowed.json', 'r') as f:
     allowed = set(json.load(f))
 
-if os.path.isfile('token.json'):
+if os.path.isfile('token.txt'):
     with open('token.txt', 'r') as f:
         TOKEN = f.read()
 else:
     sys.exit("No token defined. Define it in a file called token.txt.")
 
-if os.path.isfile('password.json'):
+if os.path.isfile('password.txt'):
     with open('password.txt', 'r') as f:
         PASSWORD = f.read()
 else:
