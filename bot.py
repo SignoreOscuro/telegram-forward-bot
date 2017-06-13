@@ -106,7 +106,7 @@ def handle(msg):
                 print(msg['from']['first_name'] + " " + (msg['from']['last_name'] if 'last_name' in msg['from'] else "") + ": " +str(msg['from']['id']))
             elif "#" == txt[0]:
                 txt_split =txt.strip().split(" ")
-                i = 0;
+                i = 0
                 tags = []
                 while i < len(txt_split) and txt_split[i][0] == "#":
                     tags.append(txt_split[i].lower())
