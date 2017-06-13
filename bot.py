@@ -80,7 +80,7 @@ def handle(msg):
                         else:
                             bot.sendMessage(chat_id, "You can't delete a chat's tag from a different chat.")
                     else:
-                        bot.sendMessage(chat_id, "Tag doesn't exist on taglist")
+                        bot.sendMessage(chat_id, "Tag doesn't exist on TagList")
                 else:
                     bot.sendMessage(chat_id, "Incorrect format. It should be _/rm #{tag}_", parse_mode="Markdown")
 
@@ -102,8 +102,12 @@ def handle(msg):
                         save_allowed(allowed)
                         bot.sendMessage(chat_id, msg['from']['first_name']+", you have been registered as an authorized user of this bot.")
                     else:
-                        bot.sendMessage(chat_id, "Password incorrecto.")
+                        bot.sendMessage(chat_id, "Wrong password.")
                 print(msg['from']['first_name'] + " " + (msg['from']['last_name'] if 'last_name' in msg['from'] else "") + ": " +str(msg['from']['id']))
+            elif "/rmme" == txt.strip()[:5]:
+                allowed.remove(msg['from']['id'])
+                bot.sendMessage(chat_id, "Your permission for using the bot was removed successfully.")
+
             elif "#" == txt[0]:
                 txt_split =txt.strip().split(" ")
                 i = 0
