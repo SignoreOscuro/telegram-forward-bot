@@ -9,15 +9,15 @@ def save_status(obj):
     with open('chats.json', 'w') as f:
         f.write(json.dumps(obj))
 
-def save_allowed(list):
+def save_allowed(s):
     with open('allowed.json', 'w') as f:
-        f.write(json.dumps(list))
+        f.write(json.dumps(list(s)))
 
 if not os.path.isfile('chats.json'):
     save_status({})
 
 if not os.path.isfile('allowed.json'):
-    save_allowed([])
+    save_allowed(set())
 
 chats = {}
 allowed = []
@@ -53,7 +53,23 @@ def handle(msg):
         elif 'caption' in msg:
             txt = txt + msg['caption']
         if txt != "":
-            if "/add" == txt[:4]:
+            if "/addme " == txt.strip()[:7]:
+                if msg['chat']['type'] != 'private':
+                    bot.sendMessage(chat_id, "This command is meant to be used only on personal chats.")
+                else:
+                    used_password = " ".join(txt.strip().split(" ")[1:])
+                    if used_password == PASSWORD:
+                        allowed.add(msg['from']['id'])
+                        save_allowed(allowed)
+                        bot.sendMessage(chat_id, msg['from']['first_name']+", you have been registered " +
+                                                                           "as an authorized user of this bot.")
+                    else:
+                        bot.sendMessage(chat_id, "Wrong password.")
+            elif "/rmme" == txt.strip()[:5]:
+                allowed.remove(msg['from']['id'])
+                save_allowed(allowed)
+                bot.sendMessage(chat_id, "Your permission for using the bot was removed successfully.")
+            elif "/add" == txt[:4]:
                 txt_split = txt.strip().split(" ")
                 if len(txt_split) == 2 and "#" == txt_split[1][0]:
                     tag = txt_split[1].lower()
@@ -92,22 +108,6 @@ def handle(msg):
                 for (tag, name) in sorted(tags_names):
                     response = response + "\n<b>" + tag + "</b>: <i>" + name + "</i>"
                 bot.sendMessage(chat_id, response, parse_mode="HTML")
-            elif "/addme" == txt.strip()[:6]:
-                if msg['chat']['type'] != 'private':
-                    bot.sendMessage(chat_id, "This command is meant to be used only on personal chats.")
-                else:
-                    used_password = " ".join(txt.strip().split(" ")[1:])
-                    if used_password == PASSWORD:
-                        allowed.add(msg['from']['id'])
-                        save_allowed(allowed)
-                        bot.sendMessage(chat_id, msg['from']['first_name']+", you have been registered as an authorized user of this bot.")
-                    else:
-                        bot.sendMessage(chat_id, "Wrong password.")
-                print(msg['from']['first_name'] + " " + (msg['from']['last_name'] if 'last_name' in msg['from'] else "") + ": " +str(msg['from']['id']))
-            elif "/rmme" == txt.strip()[:5]:
-                allowed.remove(msg['from']['id'])
-                bot.sendMessage(chat_id, "Your permission for using the bot was removed successfully.")
-
             elif "#" == txt[0]:
                 txt_split =txt.strip().split(" ")
                 i = 0
