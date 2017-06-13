@@ -101,9 +101,10 @@ ENV/
 .mypy_cache/
 
 # token, allowed y groups are ignored
-token.txt
 allowed.json
 data.json
+token.txt
+password.txt
 
 #idea is ignored too
 

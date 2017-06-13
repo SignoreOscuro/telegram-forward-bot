@@ -6,31 +6,46 @@ import time
 from telepot.loop import MessageLoop
 
 def save_status(obj):
-    with open('groups.json', 'w') as f:
+    with open('chats.json', 'w') as f:
         f.write(json.dumps(obj))
 
 def save_allowed(list):
     with open('allowed.json', 'w') as f:
         f.write(json.dumps(list))
 
-if not os.path.isfile('groups.json'):
+if not os.path.isfile('chats.json'):
     save_status({})
 
 if not os.path.isfile('allowed.json'):
     save_allowed([])
 
-chats = None
-allowed = None
+chats = {}
+allowed = []
+TOKEN = ""
+PASSWORD = "changeme"
 
-with open('groups.json', 'r') as f:
+with open('chats.json', 'r') as f:
     chats = json.load(f)
 
 with open('allowed', 'r') as f:
-    allowed = json.load(f)
+    allowed = set(json.load(f))
 
+if os.path.isfile('token.json'):
+    with open('token.txt', 'r') as f:
+        TOKEN = f.read()
+else:
+    sys.exit("No token defined. Define it in a file called token.txt.")
+
+if os.path.isfile('password.json'):
+    with open('password.txt', 'r') as f:
+        PASSWORD = f.read()
+else:
+    print("WARNING: Empty Password for registering to use the bot." +
+          " It could be dangerous, because anybody could use this bot" +
+          " and forward messages to the channels associated to it")
 
 def handle(msg):
-    if msg['from']['id'] in allowed:
+    if msg['from']['id'] in allowed or ('text' in msg and "/addme" == msg['text'].strip()[:6]):
         content_type, chat_type, chat_id = telepot.glance(msg)
         txt = ""
         if 'text' in msg:
@@ -44,14 +59,14 @@ def handle(msg):
                     tag = txt_split[1].lower()
                     name = ""
                     if msg['chat']['type'] == "private":
-                        name = name + "Chat personal con " + msg['chat']['first_name'] + ((" " + msg['chat']['last_name']) if 'last_name' in msg['chat'] else "")
+                        name = name + "Personal chat with " + msg['chat']['first_name'] + ((" " + msg['chat']['last_name']) if 'last_name' in msg['chat'] else "")
                     else:
                         name = msg['chat']['title']
                     chats[tag] = {'id': chat_id, 'name': name}
-                    bot.sendMessage(chat_id, name + " agregado con el tag " + tag)
+                    bot.sendMessage(chat_id, name + " added with tag " + tag)
                     save_status(chats)
                 else:
-                    bot.sendMessage(chat_id, "Formato incorrecto. Debería ser _/add #{tag}_", parse_mode="Markdown")
+                    bot.sendMessage(chat_id, "Incorrect format. It should be _/add #{tag}_", parse_mode="Markdown")
             elif "/rm" == txt[:3]:
                 txt_split = txt.strip().split(" ")
                 if len(txt_split) == 2 and "#" == txt_split[1][0]:
@@ -59,26 +74,35 @@ def handle(msg):
                     if tag in chats:
                         if chats[tag]['id'] == chat_id:
                             del chats[tag]
-                            bot.sendMessage(chat_id, "Tag "+tag+" borrado de la lista.")
+                            bot.sendMessage(chat_id, "Tag "+tag+" deleted from taglist.")
                             save_status(chats)
                             return
                         else:
-                            bot.sendMessage(chat_id, "No puedes eliminar el tag de un chat desde un chat distinto al que lo posee.")
+                            bot.sendMessage(chat_id, "You can't delete a chat's tag from a different chat.")
                     else:
-                        bot.sendMessage(chat_id, "Tag no existe en la lista")
+                        bot.sendMessage(chat_id, "Tag doesn't exist on taglist")
                 else:
-                    bot.sendMessage(chat_id, "Formato incorrecto. Debería ser _/rm #{tag}_", parse_mode="Markdown")
+                    bot.sendMessage(chat_id, "Incorrect format. It should be _/rm #{tag}_", parse_mode="Markdown")
 
             elif "/taglist" ==  txt.strip()[:8]:
                 tags_names = []
                 for tag, chat in chats.items():
                     tags_names.append( (tag, chat['name']))
-                response = "<b>lista de Tags</b>"
+                response = "<b>TagList</b>"
                 for (tag, name) in sorted(tags_names):
                     response = response + "\n<b>" + tag + "</b>: <i>" + name + "</i>"
                 bot.sendMessage(chat_id, response, parse_mode="HTML")
-            elif "/myid" == txt.strip()[:5]:
-                bot.sendMessage(chat_id, "ID recogido a "+msg['from']['first_name']+"!")
+            elif "/addme" == txt.strip()[:6]:
+                if msg['chat']['type'] != 'private':
+                    bot.sendMessage(chat_id, "This command is meant to be used only on personal chats.")
+                else:
+                    used_password = " ".join(txt.strip().split(" ")[1:])
+                    if used_password == PASSWORD:
+                        allowed.add(msg['from']['id'])
+                        save_allowed(allowed)
+                        bot.sendMessage(chat_id, msg['from']['first_name']+", you have been registered as an authorized user of this bot.")
+                    else:
+                        bot.sendMessage(chat_id, "Password incorrecto.")
                 print(msg['from']['first_name'] + " " + (msg['from']['last_name'] if 'last_name' in msg['from'] else "") + ": " +str(msg['from']['id']))
             elif "#" == txt[0]:
                 txt_split =txt.strip().split(" ")
@@ -97,11 +121,11 @@ def handle(msg):
                                 if 'reply_to_message' in msg:
                                     bot.forwardMessage(chats[tag]['id'], chat_id, msg['reply_to_message']['message_id'])
                     if len(approved) > 0:
-                        bot.sendMessage(chat_id, "Texto enviado a <i>" + ", ".join(approved) + "</i>", parse_mode="HTML")
+                        bot.sendMessage(chat_id, "Message forwarded to <i>" + ", ".join(approved) + "</i>", parse_mode="HTML")
                     else:
-                        bot.sendMessage(chat_id, "No se pudo enviar mensaje a ningún chat")
+                        bot.sendMessage(chat_id, "It wasn't possible to forward any message.")
                 else:
-                    bot.sendMessage(chat_id, "No puedo enviar un mensaje solo con tags")
+                    bot.sendMessage(chat_id, "I can't send a message without reply and only with tags")
 
 bot = telepot.Bot(TOKEN)
 
