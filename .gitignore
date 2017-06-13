@@ -102,9 +102,8 @@ ENV/
 
 # token, allowed y groups are ignored
 allowed.json
-data.json
-token.txt
-password.txt
+chats.json
+config.json
 
 #idea is ignored too
 

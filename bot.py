@@ -1,6 +1,7 @@
 import json
 import os
 
+import sys
 import telepot
 import time
 from telepot.loop import MessageLoop
@@ -30,19 +31,19 @@ with open('chats.json', 'r') as f:
 with open('allowed.json', 'r') as f:
     allowed = set(json.load(f))
 
-if os.path.isfile('token.txt'):
-    with open('token.txt', 'r') as f:
-        TOKEN = f.read()
+if os.path.isfile('config.json'):
+    with open('config.json', 'r') as f:
+        config = json.load(f)
+        if config['token'] == "":
+            sys.exit("No token defined. Define it in a file called token.txt.")
+        if config['password'] == "":
+            print("WARNING: Empty Password for registering to use the bot." +
+                  " It could be dangerous, because anybody could use this bot" +
+                  " and forward messages to the channels associated to it")
+        TOKEN = config['token']
+        PASSWORD = config['password']
 else:
-    sys.exit("No token defined. Define it in a file called token.txt.")
-
-if os.path.isfile('password.txt'):
-    with open('password.txt', 'r') as f:
-        PASSWORD = f.read()
-else:
-    print("WARNING: Empty Password for registering to use the bot." +
-          " It could be dangerous, because anybody could use this bot" +
-          " and forward messages to the channels associated to it")
+    sys.exit("No config file found. Remember changing the name of config-sample.json to config.json")
 
 def handle(msg):
     if msg['from']['id'] in allowed or ('text' in msg and "/addme" == msg['text'].strip()[:6]):
