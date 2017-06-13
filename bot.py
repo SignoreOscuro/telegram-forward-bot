@@ -118,6 +118,7 @@ def handle(msg):
                     i+=1
                 if i != len(txt_split) or 'reply_to_message' in msg:
                     approved = []
+                    rejected = []
                     for tag in tags:
                         if tag in chats:
                             if chats[tag]['id'] != chat_id:
@@ -125,12 +126,12 @@ def handle(msg):
                                 bot.forwardMessage(chats[tag]['id'], chat_id, msg['message_id'])
                                 if 'reply_to_message' in msg:
                                     bot.forwardMessage(chats[tag]['id'], chat_id, msg['reply_to_message']['message_id'])
-                    if len(approved) > 0:
-                        bot.sendMessage(chat_id, "Message forwarded to <i>" + ", ".join(approved) + "</i>", parse_mode="HTML")
-                    else:
-                        bot.sendMessage(chat_id, "It wasn't possible to forward any message.")
+                        else:
+                            rejected.append(tag)
+                    if len(rejected) > 0:
+                        bot.sendMessage(chat_id, "Failed to send messages to tags <i>" + ", ".join(rejected) + "</i>", parse_mode="HTML")
                 else:
-                    bot.sendMessage(chat_id, "I can't send a message without reply and only with tags")
+                    bot.sendMessage(chat_id, "Failed to send a message only with tags which is not a reply to another message")
 
 bot = telepot.Bot(TOKEN)
 

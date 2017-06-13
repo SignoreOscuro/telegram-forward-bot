@@ -25,13 +25,14 @@ finally, configure the bot, adding it on all the groups you want to connect
 1. If you want to delete your permissions from the bot, you can type `/rmme`. Then you won't be able to send commands to te bot (except for `/addme`)
 1. You can use `/taglist` for a list of tags registered to the bot, and the group/channel/private chat's names
 1. You cand add a tag to a group using `/add #{tag}`. You can remove the tag using `/rm #{tag}`.
-1. If you want to send a message/file/image/other to another group, you should add the tags **at the start** of the message. you can add more than one tag if you want to.
+1. If you want to send a message/file/image/other to another group, you should add the tags **at the start** of the message or caption. you can add more than one tag if you want to.
+1. You can forward a message by replying to it with the desired tags. Both messages will be forwarded.
 
 ## Some considerations
 
 Some details about the implementation:
 
-1. you cant forward a message to the same chat you wrote it. The boot will warn you and reject to do that if you try to do it.
+1. you can't forward a message to the same chat you wrote it. The bot will warn you and reject to do that if you try to do it.
 1. Each chat can have more than 1 tag. That's very useful if you have various names for your chats, but if you write several times the same tag, or tags that point to the same group, you will have several forwardings to that chat. I plan to correct this some day. (It's not hard but I'm very busy right now).
 1. Any person registered as authorized with the bot can add tags for the chat or another chats. The use of this bot assumes you have authorized users in your chats that you trust. Also, any person registered to the bot can forward messages to any group using the tags.
 
