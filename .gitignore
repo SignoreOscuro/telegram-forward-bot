@@ -104,3 +104,7 @@ ENV/
 token.txt
 allowed.json
 data.json
+
+#idea is ignored too
+
+.idea/
