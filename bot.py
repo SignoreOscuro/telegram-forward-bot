@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import json
 import os
 
@@ -46,7 +49,8 @@ else:
     sys.exit("No config file found. Remember changing the name of config-sample.json to config.json")
 
 def handle(msg):
-    if msg['from']['id'] in allowed or ('text' in msg and "/addme" == msg['text'].strip()[:6]):
+    print("Message: " + str(msg))
+    if ('from' in msg and msg['from']['id'] in allowed) or ('text' in msg and "/addme" == msg['text'].strip()[:6]):
         content_type, chat_type, chat_id = telepot.glance(msg)
         txt = ""
         if 'text' in msg:
