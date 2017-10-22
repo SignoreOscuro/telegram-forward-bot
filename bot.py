@@ -62,25 +62,27 @@ def handle(msg):
         txt = txt + msg['text']
     elif 'caption' in msg:
         txt = txt + msg['caption']
-    if "/addme" == txt.strip()[:6]:
-        if msg['chat']['type'] != 'private':
-            bot.sendMessage(chat_id, "This command is meant to be used only on personal chats.")
-        else:
-            used_password = " ".join(txt.strip().split(" ")[1:])
-            if used_password == PASSWORD:
-                allowed.add(msg['from']['id'])
-                save_allowed(allowed)
-                bot.sendMessage(chat_id, msg['from']['first_name'] + ", you have been registered " +
-                                "as an authorized user of this bot.")
+    # Addme and rmme only valid on groups and personal chats.
+    if msg['chat']['type'] != 'channel':
+        if "/addme" == txt.strip()[:6]:
+            if msg['chat']['type'] != 'private':
+                bot.sendMessage(chat_id, "This command is meant to be used only on personal chats.")
             else:
-                bot.sendMessage(chat_id, "Wrong password.")
+                used_password = " ".join(txt.strip().split(" ")[1:])
+                if used_password == PASSWORD:
+                    allowed.add(msg['from']['id'])
+                    save_allowed(allowed)
+                    bot.sendMessage(chat_id, msg['from']['first_name'] + ", you have been registered " +
+                                    "as an authorized user of this bot.")
+                else:
+                    bot.sendMessage(chat_id, "Wrong password.")
+        if "/rmme" == txt.strip()[:5]:
+            allowed.remove(msg['from']['id'])
+            save_allowed(allowed)
+            bot.sendMessage(chat_id, "Your permission for using the bot was removed successfully.")
     if is_allowed(msg):
         if txt != "":
-            if "/rmme" == txt.strip()[:5]:
-                allowed.remove(msg['from']['id'])
-                save_allowed(allowed)
-                bot.sendMessage(chat_id, "Your permission for using the bot was removed successfully.")
-            elif "/add" == txt[:4]:
+            if "/add " == txt[:5]:
                 txt_split = txt.strip().split(" ")
                 if len(txt_split) == 2 and "#" == txt_split[1][0]:
                     tag = txt_split[1].lower()
@@ -94,7 +96,7 @@ def handle(msg):
                     save_status(chats)
                 else:
                     bot.sendMessage(chat_id, "Incorrect format. It should be _/add #{tag}_", parse_mode="Markdown")
-            elif "/rm" == txt[:3]:
+            elif "/rm " == txt[:4]:
                 txt_split = txt.strip().split(" ")
                 if len(txt_split) == 2 and "#" == txt_split[1][0]:
                     tag = txt_split[1].lower()
