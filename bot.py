@@ -48,29 +48,35 @@ if os.path.isfile('config.json'):
 else:
     sys.exit("No config file found. Remember changing the name of config-sample.json to config.json")
 
+def is_allowed(msg):
+    if msg['chat']['type'] == 'channel':
+        return True #all channel admins are allowed to use the bot (channels don't have sender info)
+    return 'from' in msg and msg['from']['id'] in allowed
+
 def handle(msg):
     print("Message: " + str(msg))
-    if ('from' in msg and msg['from']['id'] in allowed) or ('text' in msg and "/addme" == msg['text'].strip()[:6]):
-        content_type, chat_type, chat_id = telepot.glance(msg)
-        txt = ""
-        if 'text' in msg:
-            txt = txt + msg['text']
-        elif 'caption' in msg:
-            txt = txt + msg['caption']
+    # Add person as allowed
+    content_type, chat_type, chat_id = telepot.glance(msg)
+    txt = ""
+    if 'text' in msg:
+        txt = txt + msg['text']
+    elif 'caption' in msg:
+        txt = txt + msg['caption']
+    if "/addme" == txt.strip()[:6]:
+        if msg['chat']['type'] != 'private':
+            bot.sendMessage(chat_id, "This command is meant to be used only on personal chats.")
+        else:
+            used_password = " ".join(txt.strip().split(" ")[1:])
+            if used_password == PASSWORD:
+                allowed.add(msg['from']['id'])
+                save_allowed(allowed)
+                bot.sendMessage(chat_id, msg['from']['first_name'] + ", you have been registered " +
+                                "as an authorized user of this bot.")
+            else:
+                bot.sendMessage(chat_id, "Wrong password.")
+    if is_allowed(msg):
         if txt != "":
-            if "/addme " == txt.strip()[:7]:
-                if msg['chat']['type'] != 'private':
-                    bot.sendMessage(chat_id, "This command is meant to be used only on personal chats.")
-                else:
-                    used_password = " ".join(txt.strip().split(" ")[1:])
-                    if used_password == PASSWORD:
-                        allowed.add(msg['from']['id'])
-                        save_allowed(allowed)
-                        bot.sendMessage(chat_id, msg['from']['first_name']+", you have been registered " +
-                                                                           "as an authorized user of this bot.")
-                    else:
-                        bot.sendMessage(chat_id, "Wrong password.")
-            elif "/rmme" == txt.strip()[:5]:
+            if "/rmme" == txt.strip()[:5]:
                 allowed.remove(msg['from']['id'])
                 save_allowed(allowed)
                 bot.sendMessage(chat_id, "Your permission for using the bot was removed successfully.")
