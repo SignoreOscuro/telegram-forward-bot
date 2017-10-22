@@ -100,7 +100,7 @@ ENV/
 # mypy
 .mypy_cache/
 
-# token, allowed y groups are ignored
+# token, allowed and groups are ignored
 allowed.json
 chats.json
 config.json
