@@ -1,7 +1,7 @@
 # telegram-forward-bot
 Simple Telegram Bot for forwarding messages easily between various related channels and groups.
 
-This bot allows you to automatically forward messages between different channels. We use it on our Student Comitee because we have like 15 different Telegram groups for each commission we are working on. Then, if we want some commission receives some important information, we can autocatically forward to them using _hashtags_ at the beggining of the message (or the caption of a media file).
+This bot allows you to automatically forward messages between different channels. We use it on our Student Comitee because we have like 15 different Telegram groups for each commission we are working on. Then, if we want some commission receives some important information, we can automatically forward to them using _hashtags_ at the beggining of the message (or the caption of a media file).
 
 Made with latest version of telepot at the time (12.0) and for Python 3.5.2. And shared with a MIT license.
 
